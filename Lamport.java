@@ -1,28 +1,29 @@
 import java.util.*;
 import java.util.Collections;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.net.*;
 
 public class Lamport {
 
-  ArrayList<Request> queue; // Keep "queue" as ArrayList so we can sort it according to timestamp
-  int numAcks;
+  private ArrayList<Request> queue; // Keep "queue" as ArrayList so we can sort it according to timestamp
+  private int numAcks;
+  private
+  private boolean released;
+  private RequestComparator reqComp;
+  private int serverID;
 
-  boolean released;
-  RequestComparator reqComp;
-  Server server; // The server that this Lamport object belongs to
-  int serverID;
-
-  public Lamport(Server s, int myID) {
-    server = s;
+  public Lamport(int myID) {
     serverID = myID;
     reqComp = new RequestComparator();
+    released = true;
   }
 
   public void addRequest(Request req) {
     queue.add(req);
     Collections.sort(queue, reqComp); // Re-sort every time a new request is added
   }
-
-  //ADDED IN*********************************************************
 
   //TODO: REQUEST
   //send request with (logicalClock,i) to all other processes;
@@ -49,7 +50,6 @@ public class Lamport {
   public void receiveAck(String[] cmd){
 
 
-    //if entering CS...
 
   }
 
@@ -57,13 +57,24 @@ public class Lamport {
   //delete the request by Pj from q
   //if (numAcks = N − 1) and Pi’s request smallest in q then enter critical section;
   public void receiveRelease(String[] cmd){
-
+    released = false;
   }
 
   //TODO: RELEASE
   //send release to all processes;
-  public void release(){
+  public void release() throws Exception {
+    ArrayList<String> servers = Server.getOtherServers();
 
+    for(String s : servers) {
+      String[] info = s.split(":");
+      InetAddress ia = InetAddress.getByName(info[0]);
+      Socket socket = new Socket(ia, Integer.parseInt(info[1]));
+      Scanner din = new Scanner(socket.getInputStream());
+      PrintWriter pout = new PrintWriter(socket.getOutputStream());
+      pout.println("RELEASE");
+      pout.flush();
+      socket.close();
+    }
   }
 
 }

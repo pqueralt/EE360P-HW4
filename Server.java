@@ -8,11 +8,17 @@ import java.net.*;
 public class Server {
 
   private static InventoryOperations inventory;
-  int uniqueID;
-  //TODO: IMPLEMENT LOGICAL CLOCK
+  private static ArrayList<String> otherServers; //IPaddress:Port
+  private static String thisServer;
 
-  public Server(String inventoryPath, int myID){
+  public Server(String inventoryPath){
     inventory = new InventoryOperations(inventoryPath);
+    thisServer = ""; // IP address and port of this server
+    otherServers = new ArrayList<String>(); //IP address and ports of other servers
+  }
+
+  public static ArrayList<String> getOtherServers() {
+    return otherServers;
   }
 
   public static void main (String[] args) {
@@ -22,11 +28,8 @@ public class Server {
     int numServer = sc.nextInt();
     String inventoryPath = sc.next();
 
-    Server server = new Server(inventoryPath, myID);
-    Lamport lamport = new Lamport(server, myID);
-
-    String thisServer = ""; // IP address and port of this server
-    ArrayList<String> otherServers = new ArrayList<String>(); //IP address and ports of other servers
+    Server server = new Server(inventoryPath);
+    Lamport lamport = new Lamport(myID);
 
     System.out.println("[DEBUG] my id: " + myID);
     System.out.println("[DEBUG] numServer: " + numServer);
@@ -49,6 +52,7 @@ public class Server {
 
       // TODO: start server socket to communicate with clients and other servers
       try{
+
         ServerSocket listener = new ServerSocket(Integer.valueOf(thisServer.split(":")[1]));
         Socket s;
 
@@ -56,6 +60,9 @@ public class Server {
 
           Thread serverSender = new ServerSender(s);
           serverSender.start();
+
+          Thread serverListener = new ServerListener(otherServers, thisServer);
+          serverListener.start();
 
           Scanner input = new Scanner(s.getInputStream());
           String cmd = input.nextLine();
