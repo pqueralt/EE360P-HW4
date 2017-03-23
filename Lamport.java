@@ -11,40 +11,39 @@ public class Lamport {
 
   private ArrayList<Request> queue; // Keep "queue" as ArrayList so we can sort it according to timestamp
   private RequestComparator reqComp;
-  private int serverID;
+  private String serverInfo; // IPaddress:port
 
-  public Lamport(int myID) {
-    serverID = myID;
+  public Lamport(String inf) {
+    serverInfo = serverInfo;
     reqComp = new RequestComparator();
   }
 
-  //TODO: REQUEST
-  //send request with (logicalClock,i) to all other processes;
-  //numAcks := 0;
-  public void request(String[] cmd){
-
-    //Pattern for request message: "REQUEST"-UNIQUEID-TIMESTAMP-CMD?
-
+  //"REQUEST-<TIMESTAMP>-<CMD>"
+  public synchronized void request(String req){
+    //Pattern for request message:
+    String[] s = req.split("-");
+    Request r = new Request(System.currentTimeMillis(), s[2]);
+    queue.add(r);
+    Collections.sort(queue, reqComp); // Re-sort every time a new request is added
   }
 
-  //TODO: RECEIVE REQUEST
-  //insert (ts, j) in q;
-  //send(ack, logicalClock) to Pj
-  public void receiveRequest(String[] cmd){
-
-    Request req = new Request(Long.parseLong(cmd[2]), cmd[3]);
+  // "REQUEST-<REQUESTID>-<IPADDRESS:PORT>-<TIMESTAMP>-<CMD>"
+  public synchronized void receiveRequest(String serverReq){
+    String[] s = serverReq.split("-");
+    Request req = new Request(Long.parseLong(s[3]), s[4]);
     queue.add(req);
     Collections.sort(queue, reqComp); // Re-sort every time a new request is added
-    //receiving "REQUEST"-UNIQUEID-TIMESTAMP-CMD
-    //sending "ACK"-UNIQUEID-TIMESTAMP ?
+
+    //sending "ACK-<REQUESTID>"
+    sendMessage(s[2], "ACK-" + s[1]);
 
   }
 
-  //TODO: RECEIVE ACKNOWLEDGEMENT
-  //numAcks := numAcks + 1;
-  //if (numAcks = N − 1) and Pi’s request smallest in q then enter critical section;
-  public void receiveAck(String[] cmd){
-    int rId = Integer.parseInt(cmd[1]);
+  // "ACK-<REQUESTID>"
+  public synchronized void receiveAck(String ack){
+
+    String[] s = ack.split("-");
+    int rId = Integer.parseInt(s[1]);
     for(Request r : queue) {
       if(r.getRequestId() == rId) {
         r.acknowledge();
@@ -56,24 +55,25 @@ public class Lamport {
     }
   }
 
-  //TODO: RECEIVE RELEASE
-  //delete the request by Pj from q
-  //if (numAcks = N − 1) and Pi’s request smallest in q then enter critical section;
-  public void receiveRelease(String[] cmd){
+  // "RELEASE" - Once a request is released, execute its command
+  public synchronized void receiveRelease(String cmd) {
+    Request r = queue.remove(0);
+    executeCommand(r.getCommand());
+  }
+
+  public synchronized void executeCommand(String cmd) {
 
   }
 
-  //TODO: RELEASE
-  //send release to all processes;
   public void release() throws Exception {
     ArrayList<String> servers = Server.getOtherServers();
-
     for(String s : servers) {
       sendMessage(s, "RELEASE");
     }
   }
 
-  private void sendMessage(String serverInfo, String message) throws Exception {
+  private synchronized void sendMessage(String serverInfo, String message) {
+    try{
       String[] info = serverInfo.split(":");
       InetAddress ia = InetAddress.getByName(info[0]);
       Socket socket = new Socket(ia, Integer.parseInt(info[1]));
@@ -82,10 +82,13 @@ public class Lamport {
       pout.println(message);
       pout.flush();
       socket.close();
+    } catch(Exception e) {
+      // do nothing
+    }
   }
 }
 
 
 /*
-  System.getCurrentTimeMillis(); -- to get timestamp when wanting to send a request
+  System.currentTimeMillis(); -- to get timestamp when wanting to send a request
 */

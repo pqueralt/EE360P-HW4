@@ -31,10 +31,6 @@ public class Request {
     return timestamp;
   }
 
-  public int getServerId() {
-    return 0;//serverId;
-  }
-
   public int getRequestId() {
     return requestId;
   }
