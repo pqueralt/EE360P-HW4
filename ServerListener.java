@@ -7,12 +7,12 @@ import java.net.*;
 
 public class ServerListener extends Thread{
 
-  Socket socket;
+  Socket s;
   ArrayList<String> servers;
   String thisServer;
 
   public ServerListener(Socket s,ArrayList<String> servers, String thisServer){
-    socket = s;
+    this.s = s;
     this.servers = servers;
     this.thisServer = thisServer;
   }
@@ -23,36 +23,27 @@ public class ServerListener extends Thread{
     //wait for pings every 100ms from each socket
     try{
 
-      String[] ipport = thisServer.split(":");
-      String ip = ipport[0];
-      int port = Integer.valueOf(ipport[1]);
-
-      InetAddress ia = InetAddress.getByName(ip);
-      Socket socket = new Socket(ia, port);
-      socket.setSoTimeout(100);
-
-      Scanner din = new Scanner(socket.getInputStream());
+      Scanner din = new Scanner(s.getInputStream());
 
       while(true){
 
           Thread.sleep(100);
           if(!din.hasNext()){ //server is no longer sending ping
-            System.out.println("crash");
             break;
           } else {
             ArrayList<String> results = new ArrayList<String>();
-            while(din.hasNext()){
-              String returnedVal = din.next();
+            while(din.hasNextLine()){
+              String returnedVal = din.nextLine();
               results.add(returnedVal);
             }
             if (results.size() != servers.size()){
-              System.out.println("at least one server not responding...");
               for (int i = 0; i < servers.size(); i++){
                 if (!results.contains(servers.get(i))){
                   System.out.println(servers.get(i) + " has failed");
-                  servers.remove(i);
+                  Server.removeServer(i);
                   i--;
                 }
+
               }
             }
 
@@ -63,8 +54,6 @@ public class ServerListener extends Thread{
     } catch (Exception e){
       System.err.println(e);
     }
-
-
 
   }
 

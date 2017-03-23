@@ -11,18 +11,16 @@ public class Server {
   private static ArrayList<String> otherServers; //IPaddress:Port
   private static String thisServer;
 
-  public Server(String inventoryPath){
-    inventory = new InventoryOperations(inventoryPath);
-    thisServer = ""; // IP address and port of this server
-    otherServers = new ArrayList<String>(); //IP address and ports of other servers
-  }
-
   public synchronized static ArrayList<String> getOtherServers() {
     return otherServers;
   }
 
-  public synchronized static void removeServer(int i){
+  public synchronized static String getThisServer(){
+    return thisServer;
+  }
 
+  public synchronized static void removeServer(int i){
+    otherServers.remove(i);
   }
 
   public static void main (String[] args) {
@@ -32,8 +30,9 @@ public class Server {
     int numServer = sc.nextInt();
     String inventoryPath = sc.next();
 
-    Server server = new Server(inventoryPath);
-    Lamport lamport = new Lamport(thisServer);
+    inventory = new InventoryOperations(inventoryPath);
+    thisServer = ""; // IP address and port of this server
+    otherServers = new ArrayList<String>(); //IP address and ports of other servers
 
     System.out.println("[DEBUG] my id: " + myID);
     System.out.println("[DEBUG] numServer: " + numServer);
@@ -51,6 +50,8 @@ public class Server {
       }
 
     }
+
+    Lamport lamport = new Lamport(thisServer);
 
     while (true) {
 
@@ -75,19 +76,19 @@ public class Server {
           if (receivedCmd[0].equals("CLIENT")){
             System.out.println("Server receives from client: " + receivedCmd[1]);
 
-            lamport.request(cmd);
+            //lamport.request(cmd);
 
           } else if (receivedCmd[0].equals("REQUEST")){
 
-            lamport.receiveRequest(cmd);
+            //lamport.receiveRequest(cmd);
 
           } else if (receivedCmd[0].equals("ACK")){
 
-            lamport.receiveAck(cmd);
+            //lamport.receiveAck(cmd);
 
           } else if (receivedCmd[0].equals("RELEASE")) {
 
-            lamport.receiveRelease(cmd);
+            //lamport.receiveRelease(cmd);
 
           }
 

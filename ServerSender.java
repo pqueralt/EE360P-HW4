@@ -6,15 +6,15 @@ import java.net.*;
 
 public class ServerSender extends Thread{
 
-  Socket socket;
+  Socket s;
   ArrayList<String> servers;
   String thisServer;
   ArrayList<PrintWriter> outputs;
 
   public ServerSender(Socket s, ArrayList<String> servers, String thisServer){
-    socket = s;
-    servers = servers;
-    thisServer = thisServer;
+    this.s = s;
+    this.servers = servers;
+    this.thisServer = thisServer;
     outputs = new ArrayList<PrintWriter>();
   }
 
@@ -22,11 +22,10 @@ public class ServerSender extends Thread{
 
     try{
 
-      outputs.add(new PrintWriter(socket.getOutputStream()));
+      outputs.add(new PrintWriter(s.getOutputStream()));
 
-      /*for (int i = 0; i < servers.size(); i++){
+      for (int i = 0; i < servers.size(); i++){
 
-        System.out.println("size of list of server is..."+servers.size());
         String[] ipport = servers.get(i).split(":");
         String ip = ipport[0];
         int port = Integer.valueOf(ipport[1]);
@@ -39,13 +38,13 @@ public class ServerSender extends Thread{
 
         outputs.add(pout);
 
-      }*/
+      }
 
       while(true){
 
         for (int i = 0; i < outputs.size(); i++){
           PrintWriter pout = outputs.get(i);
-          pout.println("ping");
+          pout.println(thisServer);
           pout.flush();
         }
 
