@@ -6,6 +6,13 @@ import java.util.*;
 import java.net.*;
 
 public class Server {
+
+  private static InventoryOperations inventory;
+
+  public Server(String inventoryPath){
+    inventory = new InventoryOperations(inventoryPath);
+  }
+
   public static void main (String[] args) {
 
     Scanner sc = new Scanner(System.in);
@@ -13,18 +20,19 @@ public class Server {
     int numServer = sc.nextInt();
     String inventoryPath = sc.next();
 
+    Server server = new Server(inventoryPath);
+
     String thisServer = ""; // IP address and port of this server
     ArrayList<String> otherServers = new ArrayList<String>(); //IP address and ports of other servers
 
-    /*
     System.out.println("[DEBUG] my id: " + myID);
     System.out.println("[DEBUG] numServer: " + numServer);
     System.out.println("[DEBUG] inventory path: " + inventoryPath);
-    */
 
     for (int i = 0; i < numServer; i++) {
       // parse inputs to get the ips and ports of servers
       String str = sc.next();
+      System.out.println("address for server " + i + ": " + str);
 
       if (i == myID - 1){
           thisServer = str;
@@ -33,14 +41,6 @@ public class Server {
       }
 
     }
-
-    /*
-    System.out.println("THIS SERVER " + thisServer);
-    for (int i = 0; i < otherServers.size(); i++){
-      System.out.println("OTHER SERVER " + otherServers.get(i));
-    }
-    */
-
 
     while (true) {
 
@@ -60,7 +60,7 @@ public class Server {
           String[] receivedCmd = cmd.split("-");
           if (receivedCmd[0].equals("CLIENT")){
             System.out.println("Server receives from client: " + receivedCmd[1]);
-            //attempt to enter CS - add request to Q, send request to other servers
+
           } else if (receivedCmd[0].equals("REQUEST")){
             //send acknowledgement back to server & add command to queue
           } else if (receivedCmd[0].equals("ACK")){
@@ -75,17 +75,41 @@ public class Server {
         System.err.println(e);
       }
 
-      // TODO: parse the inventory file
-
-      // TODO: handle request from client
-
-
-
-
-
-
     }
 
+  }
+
+  //TODO: REQUEST
+  //send request with (logicalClock,i) to all other processes;
+  //numAcks := 0;
+  private void request(){
 
   }
+
+  //TODO: RECEIVE REQUEST
+  //insert (ts, j) in q;
+  private void receiveRequest(){
+
+  }
+
+  //TODO: RECEIVE ACKNOWLEDGEMENT
+  //numAcks := numAcks + 1;
+  //if (numAcks = N − 1) and Pi’s request smallest in q then enter critical section;
+  private void receiveAck(){
+
+  }
+
+  //TODO: RECEIVE RELEASE
+  //delete the request by Pj from q
+  //if (numAcks = N − 1) and Pi’s request smallest in q then enter critical section;
+  private void receiveRelease(){
+
+  }
+
+  //TODO: RELEASE
+  //send release to all processes;
+  private void release(){
+
+  }
+
 }

@@ -31,7 +31,7 @@ public class Client {
 
         String result = clientThread.getResult();
 
-        if (result.equals("")){ //server fail
+        if (result.equals("crash")){ //server fail
           System.out.println("SERVER CRASHED");
 
           servers.remove(i); //server removed from viable list

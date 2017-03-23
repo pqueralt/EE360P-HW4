@@ -36,6 +36,7 @@ class ClientThread extends Thread{
       while(true){
           Thread.sleep(100);
           if(!din.hasNext()){ //server is no longer sending ping
+            result = "crash";
             break;
           } else {
             String returnedVal = din.next(); //check if ping or result
