@@ -8,9 +8,16 @@ import java.net.*;
 public class Server {
 
   private static InventoryOperations inventory;
+  int uniqueID;
+  Queue<Integer> queue;
+  int numAcks;
+  //TODO: IMPLEMENT LOGICAL CLOCK
 
-  public Server(String inventoryPath){
+  public Server(String inventoryPath, int myID){
     inventory = new InventoryOperations(inventoryPath);
+    queue = new LinkedList<Integer>();
+    numAcks = 0;
+    uniqueID = myID;
   }
 
   public static void main (String[] args) {
@@ -20,7 +27,7 @@ public class Server {
     int numServer = sc.nextInt();
     String inventoryPath = sc.next();
 
-    Server server = new Server(inventoryPath);
+    Server server = new Server(inventoryPath, myID);
 
     String thisServer = ""; // IP address and port of this server
     ArrayList<String> otherServers = new ArrayList<String>(); //IP address and ports of other servers
@@ -61,12 +68,20 @@ public class Server {
           if (receivedCmd[0].equals("CLIENT")){
             System.out.println("Server receives from client: " + receivedCmd[1]);
 
+            server.request(receivedCmd);
+
           } else if (receivedCmd[0].equals("REQUEST")){
-            //send acknowledgement back to server & add command to queue
+
+            server.receiveRequest(receivedCmd);
+
           } else if (receivedCmd[0].equals("ACK")){
-            //+1 acknowledgement
+
+            server.receiveAck(receivedCmd);
+
           } else if (receivedCmd[0].equals("RELEASE")) {
-            //check if can enter CS next
+
+            server.receiveRelease(receivedCmd);
+
           }
 
         }
@@ -82,27 +97,36 @@ public class Server {
   //TODO: REQUEST
   //send request with (logicalClock,i) to all other processes;
   //numAcks := 0;
-  private void request(){
+  private void request(String[] cmd){
+
+    //Pattern for request message: "REQUEST"-UNIQUEID-TIMESTAMP-CMD?
 
   }
 
   //TODO: RECEIVE REQUEST
   //insert (ts, j) in q;
-  private void receiveRequest(){
+  //send(ack, logicalClock) to Pj
+  private void receiveRequest(String[] cmd){
+
+    //receiving "REQUEST"-UNIQUEID-TIMESTAMP-CMD
+    //sending "ACK"-UNIQUEID-TIMESTAMP ?
 
   }
 
   //TODO: RECEIVE ACKNOWLEDGEMENT
   //numAcks := numAcks + 1;
   //if (numAcks = N − 1) and Pi’s request smallest in q then enter critical section;
-  private void receiveAck(){
+  private void receiveAck(String[] cmd){
+
+
+    //if entering CS...
 
   }
 
   //TODO: RECEIVE RELEASE
   //delete the request by Pj from q
   //if (numAcks = N − 1) and Pi’s request smallest in q then enter critical section;
-  private void receiveRelease(){
+  private void receiveRelease(String[] cmd){
 
   }
 
