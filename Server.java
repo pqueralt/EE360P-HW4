@@ -17,8 +17,12 @@ public class Server {
     otherServers = new ArrayList<String>(); //IP address and ports of other servers
   }
 
-  public static ArrayList<String> getOtherServers() {
+  public synchronized static ArrayList<String> getOtherServers() {
     return otherServers;
+  }
+
+  public synchronized static void removeServer(int i){
+
   }
 
   public static void main (String[] args) {
@@ -58,10 +62,10 @@ public class Server {
 
         while( (s = listener.accept()) != null){
 
-          Thread serverSender = new ServerSender(s);
+          Thread serverSender = new ServerSender(s, otherServers, thisServer);
           serverSender.start();
 
-          Thread serverListener = new ServerListener(otherServers, thisServer);
+          Thread serverListener = new ServerListener(s, otherServers, thisServer);
           serverListener.start();
 
           Scanner input = new Scanner(s.getInputStream());

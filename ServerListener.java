@@ -1,3 +1,5 @@
+//prq63 cc47696
+
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -5,10 +7,12 @@ import java.net.*;
 
 public class ServerListener extends Thread{
 
+  Socket socket;
   ArrayList<String> servers;
   String thisServer;
 
-  public ServerListener(ArrayList<String> servers, String thisServer){
+  public ServerListener(Socket s,ArrayList<String> servers, String thisServer){
+    socket = s;
     this.servers = servers;
     this.thisServer = thisServer;
   }
@@ -18,8 +22,6 @@ public class ServerListener extends Thread{
     //set up listener sockets for all other servers
     //wait for pings every 100ms from each socket
     try{
-
-      System.out.println("Setting up socket...");
 
       String[] ipport = thisServer.split(":");
       String ip = ipport[0];
@@ -31,7 +33,6 @@ public class ServerListener extends Thread{
 
       Scanner din = new Scanner(socket.getInputStream());
 
-      System.out.println("listening...");
       while(true){
 
           Thread.sleep(100);

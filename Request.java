@@ -1,3 +1,5 @@
+//prq63 cc47696
+
 import java.util.Comparator;
 import java.util.Random;
 public class Request {
@@ -6,7 +8,7 @@ public class Request {
   private int numAcks;
   private String command;
 
-  public void Request(long ts, String cmd) {
+  public Request(long ts, String cmd) {
     timestamp = ts;
     command = cmd;
     Random r = new Random();
@@ -30,7 +32,7 @@ public class Request {
   }
 
   public int getServerId() {
-    return serverId;
+    return 0;//serverId;
   }
 
   public int getRequestId() {
