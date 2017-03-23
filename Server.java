@@ -61,7 +61,7 @@ public class Server {
           if (receivedCmd[0].equals("CLIENT")){
             System.out.println("Server receives from client: " + receivedCmd[1]);
             //attempt to enter CS - add request to Q, send request to other servers
-          } else if (receivedCmd[0].equals("SERVER")){
+          } else if (receivedCmd[0].equals("REQUEST")){
             //send acknowledgement back to server & add command to queue
           } else if (receivedCmd[0].equals("ACK")){
             //+1 acknowledgement
