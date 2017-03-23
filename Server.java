@@ -33,7 +33,7 @@ public class Server {
     String inventoryPath = sc.next();
 
     Server server = new Server(inventoryPath);
-    Lamport lamport = new Lamport(myID);
+    Lamport lamport = new Lamport(thisServer);
 
     System.out.println("[DEBUG] my id: " + myID);
     System.out.println("[DEBUG] numServer: " + numServer);
@@ -75,19 +75,19 @@ public class Server {
           if (receivedCmd[0].equals("CLIENT")){
             System.out.println("Server receives from client: " + receivedCmd[1]);
 
-            lamport.request(receivedCmd);
+            lamport.request(cmd);
 
           } else if (receivedCmd[0].equals("REQUEST")){
 
-            lamport.receiveRequest(receivedCmd);
+            lamport.receiveRequest(cmd);
 
           } else if (receivedCmd[0].equals("ACK")){
 
-            lamport.receiveAck(receivedCmd);
+            lamport.receiveAck(cmd);
 
           } else if (receivedCmd[0].equals("RELEASE")) {
 
-            lamport.receiveRelease(receivedCmd);
+            lamport.receiveRelease(cmd);
 
           }
 
