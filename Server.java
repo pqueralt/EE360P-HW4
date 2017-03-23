@@ -47,31 +47,34 @@ public class Server {
       // TODO: start server socket to communicate with clients and other servers
       try{
         ServerSocket listener = new ServerSocket(Integer.valueOf(thisServer.split(":")[1]));
-
         Socket s;
-        s = listener.accept();
-          Scanner input = new Scanner(s.getInputStream());
 
-          while(!input.hasNextLine());
-          System.out.println("aquiring command");
-          String cmd = input.nextLine();
-          System.out.println(cmd);
-
-          //TODO
-          //check command - if from other server, acknowledge and add to quue
-          //if from client - send to other servers
-          //if commnand is release statement, check if can enter CS next
+        while( (s = listener.accept()) != null){
 
           Thread serverSender = new ServerSender(s);
           serverSender.start();
 
+          Scanner input = new Scanner(s.getInputStream());
+          String cmd = input.nextLine();
 
+          String[] receivedCmd = cmd.split("-");
+          if (receivedCmd[0].equals("CLIENT")){
+            System.out.println("Server receives from client: " + receivedCmd[1]);
+            //attempt to enter CS - add request to Q, send request to other servers
+          } else if (receivedCmd[0].equals("SERVER")){
+            //send acknowledgement back to server & add command to queue
+          } else if (receivedCmd[0].equals("ACK")){
+            //+1 acknowledgement
+          } else if (receivedCmd[0].equals("RELEASE")) {
+            //check if can enter CS next
+          }
+
+        }
 
       } catch (Exception e){
         System.err.println(e);
       }
 
-      while(true);
       // TODO: parse the inventory file
 
       // TODO: handle request from client

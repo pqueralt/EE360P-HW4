@@ -30,7 +30,7 @@ class ClientThread extends Thread{
 
       Scanner din = new Scanner(socket.getInputStream());
       PrintWriter pout = new PrintWriter(socket.getOutputStream());
-      pout.println(cmd);
+      pout.println("CLIENT-"+cmd); //append client code
       pout.flush();
 
       while(true){

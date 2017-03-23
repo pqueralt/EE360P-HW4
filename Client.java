@@ -8,13 +8,13 @@ import java.lang.*;
 public class Client {
   public static void main (String[] args) {
     Scanner sc = new Scanner(System.in);
-    int numServer = sc.nextInt();
+    int numServer = Integer.valueOf(sc.nextLine());
 
     ArrayList<String> servers = new ArrayList<>();
 
     for (int i = 0; i < numServer; i++) {
       // TODO: parse inputs to get the ips and ports of servers
-      String str = sc.next();
+      String str = sc.nextLine();
       servers.add(str);
     }
 
