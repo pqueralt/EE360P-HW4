@@ -10,12 +10,13 @@ class ClientThread extends Thread{
   String ip;
   int port;
   String cmd;
-  String result = "";
+  String result;
 
   public ClientThread(String server, String cmd){
     this.ip = server.split(":")[0];
     this.port = Integer.valueOf(server.split(":")[1]);
     this.cmd = cmd;
+    result = "";
   }
 
   public String getResult(){
@@ -36,18 +37,21 @@ class ClientThread extends Thread{
       pout.flush();
 
       while(true){
-          Thread.sleep(100);
+          Thread.sleep(75);
           if(!din.hasNextLine()){ //server is no longer sending ping
             result = "crash";
+            socket.close();
             break;
           } else {
             String returnedVal = din.nextLine(); //check if ping or result
-            if (!returnedVal.contains("127.0.0.1")){
+            System.out.print(returnedVal);
+            if (!returnedVal.contains("127.0.0.1")){ System.out.println("CLIENT GETS RECEIPT");
               while (!returnedVal.contains("127.0.0.1")){
                 //System.out.println("client receives..." + returnedVal);
-                result += returnedVal;
+                result += returnedVal + "\n";
                 returnedVal = din.nextLine();
               }
+              socket.close();
               break;
             }
           }

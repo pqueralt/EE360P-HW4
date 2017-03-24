@@ -88,8 +88,10 @@ public class Lamport {
 
     String result = "";
 
+    System.out.println("receiveRelease: queue before delete..."+queue);
     Request r = queue.remove(0);
     executeCommand(r.getCommand());
+    System.out.println("finishes executing command"); 
 
     if (queue.size() > 0){
       Request headOfQ = queue.get(0);

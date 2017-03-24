@@ -22,6 +22,11 @@ public class Server {
     return result;
   }
 
+  public synchronized static void setClientResult(String result){
+    System.out.println("client result..." + result);
+    clientResult = result;
+  }
+
   public synchronized static String getThisServer(){
     return thisServer;
   }
@@ -97,14 +102,14 @@ public class Server {
 
             String result = lamport.receiveAck(cmd);
             if (!result.equals("")){
-              clientResult = result;
+              setClientResult(result);
             }
 
           } else if (receivedCmd[0].equals("RELEASE")) {
 
             String result = lamport.receiveRelease(cmd);
             if (!result.equals("")){
-              clientResult = result;
+              setClientResult(result);
             }
 
           }

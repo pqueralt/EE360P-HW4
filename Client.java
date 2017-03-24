@@ -18,13 +18,17 @@ public class Client {
       servers.add(str);
     }
 
+
+
     while(sc.hasNextLine()) {
       String cmd = sc.nextLine();
+      System.out.println("You just entered command..."+ cmd);
 
       for (int i = 0; i < servers.size(); i++){
         System.out.println("Connecting to... " + servers.get(i));
         ClientThread clientThread = new ClientThread(servers.get(i), cmd);
         clientThread.start();
+        System.out.println("Waiting to receive result from server");
         try{
           clientThread.join();
         } catch (InterruptedException e){};
@@ -38,7 +42,7 @@ public class Client {
           i--;
 
         } else { //server success
-          System.out.println(result); 
+          System.out.print(result);
           break;
         }
 

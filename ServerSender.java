@@ -22,7 +22,7 @@ public class ServerSender extends Thread{
 
     try{
 
-      outputs.add(new PrintWriter(s.getOutputStream()));
+      //outputs.add(new PrintWriter(s.getOutputStream()));
 
       /*for (int i = 0; i < servers.size(); i++){
 
@@ -40,22 +40,21 @@ public class ServerSender extends Thread{
 
       }*/
 
+      PrintWriter pout = new PrintWriter(s.getOutputStream());
       while(true){
 
-        for (int i = 0; i < outputs.size(); i++){
-          PrintWriter pout = outputs.get(i);
-
           String clientResult = Server.getClientResult();
-          if (!clientResult.equals("")){
+          System.out.print("."+clientResult);
+          if (!clientResult.equals("")){ System.out.println("CLIENT SHOULD HEAR BACK");
             pout.println(clientResult);
+            pout.flush();
           } else {
             pout.println(thisServer);
+            pout.flush();
           }
 
-          pout.flush();
-        }
-
         Thread.sleep(100);
+
       }
     } catch (Exception e){
       System.err.println(e);
