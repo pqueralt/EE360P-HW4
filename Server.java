@@ -23,6 +23,10 @@ public class Server {
     otherServers.remove(i);
   }
 
+  public synchronized static InventoryOperations getInventory() {
+    return inventory;
+  }
+
   public static void main (String[] args) {
 
     Scanner sc = new Scanner(System.in);

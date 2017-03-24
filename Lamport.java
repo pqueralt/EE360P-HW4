@@ -11,7 +11,7 @@ public class Lamport {
 
   private ArrayList<Request> queue; // Keep "queue" as ArrayList so we can sort it according to timestamp
   private RequestComparator reqComp;
-  private String serverInfo; // IPaddress:port
+  private String serverInfo; // IPaddress:port\
 
   public Lamport(String inf) {
     serverInfo = serverInfo;
@@ -61,8 +61,24 @@ public class Lamport {
     executeCommand(r.getCommand());
   }
 
-  public synchronized void executeCommand(String cmd) {
+  public synchronized String executeCommand(String cmd) {
+    String[] tokens = cmd.split(" ");
+    InventoryOperations inventory = Server.getInventory();
+    if (tokens[0].equals("purchase")) {
+      return inventory.purchase(tokens[1], tokens[2], Integer.valueOf(tokens[3]));
 
+    } else if (tokens[0].equals("cancel")) {
+      return inventory.cancel(Integer.valueOf(tokens[1]));
+
+    } else if (tokens[0].equals("search")) {
+      return inventory.search(tokens[1]);
+
+    } else if (tokens[0].equals("list")) {
+      return inventory.list();
+
+    } else {
+      return("ERROR: No such command");
+    }
   }
 
   public void release() throws Exception {
