@@ -9,14 +9,19 @@ public class Request {
   private int requestId;
   private int numAcks;
   private String command;
+  private String serverInfo;
 
-  public Request(long ts, String cmd) {
+  public Request(long ts, String cmd, String server) {
     timestamp = ts;
     command = cmd;
     Random r = new Random();
     requestId = r.nextInt();
     requestId = Math.abs(requestId);
-    
+    serverInfo = server; 
+  }
+
+  public String getServerInfo(){
+    return serverInfo;
   }
 
   public String getCommand() {

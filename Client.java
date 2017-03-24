@@ -38,12 +38,10 @@ public class Client {
           i--;
 
         } else { //server success
-          //break;
+          break;
         }
 
       }
-
-      System.out.println("No more available servers");
 
     }
   }

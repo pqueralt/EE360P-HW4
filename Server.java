@@ -87,14 +87,11 @@ public class Server {
 
           } else if (receivedCmd[0].equals("ACK")){
 
-            String result = lamport.receiveAck(cmd);
-            if (!result.equals("")){
-              System.out.println(result); 
-            }
+            lamport.receiveAck(cmd, s);
 
           } else if (receivedCmd[0].equals("RELEASE")) {
 
-            lamport.receiveRelease(cmd);
+            lamport.receiveRelease(cmd, s);
 
           }
 

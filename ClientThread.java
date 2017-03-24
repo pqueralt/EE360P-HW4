@@ -37,11 +37,15 @@ class ClientThread extends Thread{
 
       while(true){
           Thread.sleep(100);
-          if(!din.hasNext()){ //server is no longer sending ping
+          if(!din.hasNextLine()){ //server is no longer sending ping
             result = "crash";
             break;
           } else {
-            String returnedVal = din.next(); //check if ping or result
+            String returnedVal = din.nextLine(); //check if ping or result
+            if (!returnedVal.contains("127.0.0.1")){
+              System.out.println("client receives..." + returnedVal);
+              break;
+            }
           }
       }
 

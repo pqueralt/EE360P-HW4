@@ -26,7 +26,7 @@ public class Lamport {
     System.out.println("Lamport request was passed: \"" + req + "\"");
     //Pattern for request message:
     String[] s = req.split("-");
-    Request r = new Request(System.currentTimeMillis(), s[1]);
+    Request r = new Request(System.currentTimeMillis(), s[1], serverInfo);
     queue.add(r);
     Collections.sort(queue, reqComp); // Re-sort every time a new request is added
 
@@ -46,7 +46,7 @@ public class Lamport {
 
     System.out.println("Lamport receiveRequest was passed: \"" + serverReq + "\"");
     String[] s = serverReq.split("-");
-    Request req = new Request(Long.parseLong(s[3]), s[4]);
+    Request req = new Request(Long.parseLong(s[3]), s[4], serverInfo);
     queue.add(req);
     Collections.sort(queue, reqComp); // Re-sort every time a new request is added
 
@@ -56,10 +56,9 @@ public class Lamport {
   }
 
   // "ACK-<REQUESTID>"
-  public synchronized String receiveAck(String ack){
+  public synchronized void receiveAck(String ack, Socket sendResult){
     System.out.println("Lamport receiveAck was passed: \"" + ack + "\"");
 
-    String result = "";
     String[] s = ack.split("-");
     int rId = Integer.parseInt(s[1]);
     for(Request r : queue) {
@@ -68,20 +67,34 @@ public class Lamport {
         if(queue.indexOf(r) == 0 && r.getNumAcks() >= Server.getOtherServers().size()) {
           // Enter CS? call function to execute CS logic here
           System.out.println("free to enter CS");
-          result = executeCommand(r.getCommand());
+          String result = executeCommand(r.getCommand());
+          System.out.println(result);
+          sendResult(result, sendResult);
+          sendMessage("127.0.0.1:8025", result);
+
         }
         break;
       }
     }
-    return result;
-    
+
   }
 
   // "RELEASE" - Once a request is released, execute its command
-  public synchronized void receiveRelease(String cmd) {
+  public synchronized void receiveRelease(String cmd, Socket sendResult) {
     System.out.println("Lamport receiveRelease was passed: \"" + cmd + "\"");
+
     Request r = queue.remove(0);
     executeCommand(r.getCommand());
+
+    Request headOfQ = queue.get(0);
+    if (headOfQ.getServerInfo().equals(serverInfo) && headOfQ.getNumAcks() >= Server.getOtherServers().size()){
+      System.out.println("free to enter CS");
+      String result = executeCommand(headOfQ.getCommand());
+      System.out.println(result);
+      sendResult(result, sendResult);
+      sendMessage("127.0.0.1:8025", result);
+    }
+
   }
 
   public synchronized String executeCommand(String cmd) {
@@ -125,6 +138,17 @@ public class Lamport {
       // do nothing
     }
   }
+
+  private synchronized void sendResult(String result, Socket s){
+    try {
+      PrintWriter pout = new PrintWriter(s.getOutputStream());
+      pout.println(result);
+      pout.flush();
+    } catch (Exception e){
+      System.err.println("this is broken");
+    }
+  }
+
 }
 
 
