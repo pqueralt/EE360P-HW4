@@ -2,6 +2,8 @@
 
 import java.util.Comparator;
 import java.util.Random;
+import java.util.*;
+
 public class Request {
   private long timestamp;
   private int requestId;
@@ -13,6 +15,8 @@ public class Request {
     command = cmd;
     Random r = new Random();
     requestId = r.nextInt();
+    requestId = Math.abs(requestId);
+    
   }
 
   public String getCommand() {

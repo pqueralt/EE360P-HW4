@@ -55,7 +55,7 @@ public class Server {
 
     }
 
-    Lamport lamport = new Lamport(thisServer);
+    Lamport lamport = new Lamport(thisServer, otherServers);
 
     while (true) {
 
@@ -70,29 +70,31 @@ public class Server {
           Thread serverSender = new ServerSender(s, otherServers, thisServer);
           serverSender.start();
 
-          Thread serverListener = new ServerListener(s, otherServers, thisServer);
-          serverListener.start();
-
+          /*Thread serverListener = new ServerListener(s, otherServers, thisServer);
+          serverListener.start();*/
           Scanner input = new Scanner(s.getInputStream());
           String cmd = input.nextLine();
-
           String[] receivedCmd = cmd.split("-");
           if (receivedCmd[0].equals("CLIENT")){
-            System.out.println("Server receives from client: " + receivedCmd[1]);
-
-            //lamport.request(cmd);
+            System.out.println("Server receives from client: " + cmd);
+            System.out.println("Sending client request to lamport");
+            lamport.request(cmd);
 
           } else if (receivedCmd[0].equals("REQUEST")){
 
-            //lamport.receiveRequest(cmd);
+            System.out.println("Receives request");
+            lamport.receiveRequest(cmd);
 
           } else if (receivedCmd[0].equals("ACK")){
 
-            //lamport.receiveAck(cmd);
+            String result = lamport.receiveAck(cmd);
+            if (!result.equals("")){
+              System.out.println(result); 
+            }
 
           } else if (receivedCmd[0].equals("RELEASE")) {
 
-            //lamport.receiveRelease(cmd);
+            lamport.receiveRelease(cmd);
 
           }
 

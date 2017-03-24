@@ -24,7 +24,7 @@ public class ServerSender extends Thread{
 
       outputs.add(new PrintWriter(s.getOutputStream()));
 
-      for (int i = 0; i < servers.size(); i++){
+      /*for (int i = 0; i < servers.size(); i++){
 
         String[] ipport = servers.get(i).split(":");
         String ip = ipport[0];
@@ -38,7 +38,7 @@ public class ServerSender extends Thread{
 
         outputs.add(pout);
 
-      }
+      }*/
 
       while(true){
 
