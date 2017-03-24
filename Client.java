@@ -38,6 +38,7 @@ public class Client {
           i--;
 
         } else { //server success
+          System.out.println(result); 
           break;
         }
 

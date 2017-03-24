@@ -10,9 +10,16 @@ public class Server {
   private static InventoryOperations inventory;
   private static ArrayList<String> otherServers; //IPaddress:Port
   private static String thisServer;
+  private static String clientResult;
 
   public synchronized static ArrayList<String> getOtherServers() {
     return otherServers;
+  }
+
+  public synchronized static String getClientResult(){
+    String result = clientResult;
+    clientResult = "";
+    return result;
   }
 
   public synchronized static String getThisServer(){
@@ -33,6 +40,7 @@ public class Server {
     int myID = sc.nextInt();
     int numServer = sc.nextInt();
     String inventoryPath = sc.next();
+    clientResult = "";
 
     inventory = new InventoryOperations(inventoryPath);
     thisServer = ""; // IP address and port of this server
@@ -87,11 +95,17 @@ public class Server {
 
           } else if (receivedCmd[0].equals("ACK")){
 
-            lamport.receiveAck(cmd, s);
+            String result = lamport.receiveAck(cmd);
+            if (!result.equals("")){
+              clientResult = result;
+            }
 
           } else if (receivedCmd[0].equals("RELEASE")) {
 
-            lamport.receiveRelease(cmd, s);
+            String result = lamport.receiveRelease(cmd);
+            if (!result.equals("")){
+              clientResult = result;
+            }
 
           }
 

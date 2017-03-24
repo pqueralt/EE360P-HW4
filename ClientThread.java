@@ -43,7 +43,11 @@ class ClientThread extends Thread{
           } else {
             String returnedVal = din.nextLine(); //check if ping or result
             if (!returnedVal.contains("127.0.0.1")){
-              System.out.println("client receives..." + returnedVal);
+              while (!returnedVal.contains("127.0.0.1")){
+                //System.out.println("client receives..." + returnedVal);
+                result += returnedVal;
+                returnedVal = din.nextLine();
+              }
               break;
             }
           }

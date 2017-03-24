@@ -44,7 +44,14 @@ public class ServerSender extends Thread{
 
         for (int i = 0; i < outputs.size(); i++){
           PrintWriter pout = outputs.get(i);
-          pout.println(thisServer);
+
+          String clientResult = Server.getClientResult();
+          if (!clientResult.equals("")){
+            pout.println(clientResult);
+          } else {
+            pout.println(thisServer);
+          }
+
           pout.flush();
         }
 

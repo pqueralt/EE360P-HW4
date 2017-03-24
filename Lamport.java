@@ -56,44 +56,52 @@ public class Lamport {
   }
 
   // "ACK-<REQUESTID>"
-  public synchronized void receiveAck(String ack, Socket sendResult){
+  public synchronized String receiveAck(String ack){
     System.out.println("Lamport receiveAck was passed: \"" + ack + "\"");
+
+    String result = "";
 
     String[] s = ack.split("-");
     int rId = Integer.parseInt(s[1]);
     for(Request r : queue) {
       if(r.getRequestId() == rId) {
         r.acknowledge();
+
         if(queue.indexOf(r) == 0 && r.getNumAcks() >= Server.getOtherServers().size()) {
           // Enter CS? call function to execute CS logic here
           System.out.println("free to enter CS");
-          String result = executeCommand(r.getCommand());
+          result = executeCommand(r.getCommand());
           System.out.println(result);
-          sendResult(result, sendResult);
-          sendMessage("127.0.0.1:8025", result);
-
+          release();
         }
         break;
       }
     }
 
+    return result;
+
   }
 
   // "RELEASE" - Once a request is released, execute its command
-  public synchronized void receiveRelease(String cmd, Socket sendResult) {
+  public synchronized String receiveRelease(String cmd) {
     System.out.println("Lamport receiveRelease was passed: \"" + cmd + "\"");
+
+    String result = "";
 
     Request r = queue.remove(0);
     executeCommand(r.getCommand());
 
-    Request headOfQ = queue.get(0);
-    if (headOfQ.getServerInfo().equals(serverInfo) && headOfQ.getNumAcks() >= Server.getOtherServers().size()){
-      System.out.println("free to enter CS");
-      String result = executeCommand(headOfQ.getCommand());
-      System.out.println(result);
-      sendResult(result, sendResult);
-      sendMessage("127.0.0.1:8025", result);
+    if (queue.size() > 0){
+      Request headOfQ = queue.get(0);
+      if (headOfQ.getServerInfo().equals(serverInfo) && headOfQ.getNumAcks() >= Server.getOtherServers().size()){
+        System.out.println("free to enter CS");
+        result = executeCommand(headOfQ.getCommand());
+        System.out.println(result);
+        release();
+      }
     }
+
+    return result;
 
   }
 
@@ -117,11 +125,12 @@ public class Lamport {
     }
   }
 
-  public void release() throws Exception {
-    ArrayList<String> servers = Server.getOtherServers();
-    for(String s : servers) {
+  public void release() {
+    queue.remove(0);
+    for(String s : otherServers) {
       sendMessage(s, "RELEASE");
     }
+
   }
 
   private synchronized void sendMessage(String serverInfo, String message) {
@@ -139,15 +148,6 @@ public class Lamport {
     }
   }
 
-  private synchronized void sendResult(String result, Socket s){
-    try {
-      PrintWriter pout = new PrintWriter(s.getOutputStream());
-      pout.println(result);
-      pout.flush();
-    } catch (Exception e){
-      System.err.println("this is broken");
-    }
-  }
 
 }
 
